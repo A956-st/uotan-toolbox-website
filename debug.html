@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Debug</title>
+</head>
+<body>
+    <h1>图片调试</h1>
+    <p>测试1: 相对路径</p>
+    <img src="images/screenshot-1.png" alt="test1" style="width:300px; border:2px solid red;">
+    
+    <p>测试2: 另一张图</p>
+    <img src="images/screenshot-24.png" alt="test2" style="width:300px; border:2px solid blue;">
+    
+    <script>
+        console.log('当前页面URL:', window.location.href);
+        console.log('图片1完整路径:', new URL('images/screenshot-1.png', window.location.href).href);
+        console.log('图片2完整路径:', new URL('images/screenshot-24.png', window.location.href).href);
+    </script>
+</body>
+</html>

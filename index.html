@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="联想菜鸟工具箱 v3.0 - 专业的安卓设备开发工具箱">
+    <title>联想菜鸟工具箱 v3.0</title>
+    
+    <!-- Tailwind CSS - 使用国内CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/tailwindcss-cdn@3.4.1/tailwindcss.js"></script>
+    
+    <!-- 自定义样式 -->
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "微软雅黑", sans-serif;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* 粒子背景容器 */
+        .particles-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(50px);
+                opacity: 0;
+            }
+        }
+
+        /* 页面加载动画 */
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 导航栏样式 */
+        .navbar {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar.scrolled .nav-link {
+            color: #667eea !important;
+        }
+
+        .navbar.scrolled .logo-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-link {
+            position: relative;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: white;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Hero区域样式 */
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 1s ease;
+            text-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .hero-version {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            animation: fadeInUp 1s ease 0.4s both;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .hero-buttons {
+            animation: fadeInUp 1s ease 0.6s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 按钮样式 */
+        .btn-primary {
+            background: white;
+            color: #667eea;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid white;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-3px);
+        }
+
+        /* 功能卡片样式 */
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .feature-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(5deg);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .feature-desc {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+
+        /* 底部样式 */
+        .footer {
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        /* 滚动视差效果 */
+        .parallax {
+            transition: transform 0.5s ease-out;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+            .feature-card {
+                margin-bottom: 1.5rem;
+            }
+        }
+
+        /* 平滑滚动 */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* 内容容器 */
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- 页面加载动画 -->
+    <div class="page-loader" id="pageLoader">
+        <div class="loader-spinner"></div>
+    </div>
+
+    <!-- 粒子背景 -->
+    <div class="particles-bg" id="particlesBg"></div>
+
+    <!-- 导航栏 -->
+    <nav class="navbar fixed top-0 w-full z-50" id="navbar">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                        <span class="text-2xl">🔧</span>
+                    </div>
+                    <span class="logo-text text-2xl font-bold text-white">联想菜鸟工具箱 v3.0</span>
+                </div>
+                
+                <!-- 导航菜单 -->
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="nav-link text-white hover:text-opacity-80">首页</a>
+                    <a href="#features" class="nav-link text-white hover:text-opacity-80">功能</a>
+                    <a href="#disclaimer" class="nav-link text-white hover:text-opacity-80">免责声明</a>
+                    <a href="#about" class="nav-link text-white hover:text-opacity-80">关于</a>
+                </div>
+
+                <!-- 移动端菜单按钮 -->
+                <button class="md:hidden text-white" id="mobileMenuBtn">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 内容容器 -->
+    <div class="content-wrapper">
+        <!-- Hero 区域 -->
+        <section class="hero-section" id="home">
+            <div class="container mx-auto px-6 text-center">
+                <div class="parallax" data-speed="0.5">
+                    <h1 class="hero-title mb-6">联想菜鸟工具箱</h1>
+                    <p class="hero-subtitle mb-8">专业的安卓设备开发工具箱</p>
+                    <div class="hero-version mb-12">v3.0 正式版</div>
+                    <div class="hero-buttons flex justify-center space-x-4 flex-wrap gap-4">
+                        <button class="btn-primary" id="downloadBtn">立即下载</button>
+                        <a href="docs.html" class="btn-secondary" style="text-decoration: none; display: inline-block;">查看文档</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 功能模块区域 -->
+        <section class="py-20 px-6" id="features">
+            <div class="container mx-auto">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-white mb-4">核心功能</h2>
+                    <p class="text-xl text-white text-opacity-80">强大的工具集，满足你的所有需求</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- 功能卡片 1 -->
+                    <div class="feature-card" data-delay="0">
+                        <div class="feature-icon">📱</div>
+                        <h3 class="feature-title">设备管理</h3>
+                        <p class="feature-desc">快速连接和管理安卓设备，支持ADB、Fastboot等多种连接方式</p>
+                    </div>
+
+                    <!-- 功能卡片 2 -->
+                    <div class="feature-card" data-delay="100">
+                        <div class="feature-icon">⚡</div>
+                        <h3 class="feature-title">一键刷机</h3>
+                        <p class="feature-desc">简化刷机流程，支持 Fastboot 模式，安全可靠</p>
+                    </div>
+
+                    <!-- 功能卡片 3 -->
+                    <div class="feature-card" data-delay="200">
+                        <div class="feature-icon">🔐</div>
+                        <h3 class="feature-title">回锁工具</h3>
+                        <p class="feature-desc">支持 Bootloader BL 锁，一键回锁，支持多种方案</p>
+                    </div>
+
+                    <!-- 功能卡片 4 -->
+                    <div class="feature-card" data-delay="300">
+                        <div class="feature-icon">🎯</div>
+                        <h3 class="feature-title">Root管理</h3>
+                        <p class="feature-desc">集成多种 root 方案，适配全机型，全网首发引导式 root</p>
+                    </div>
+
+                    <!-- 功能卡片 5 -->
+                    <div class="feature-card" data-delay="400">
+                        <div class="feature-icon">📦</div>
+                        <h3 class="feature-title">应用管理</h3>
+                        <p class="feature-desc">批量安装、卸载、备份应用，管理更高效</p>
+                    </div>
+
+                    <!-- 功能卡片 6 -->
+                    <div class="feature-card" data-delay="500">
+                        <div class="feature-icon">🖥️</div>
+                        <h3 class="feature-title">投屏功能</h3>
+                        <p class="feature-desc">集成Scrcpy投屏工具，流畅的屏幕镜像体验</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 免责声明区域 -->
+        <section class="py-20 px-6" id="disclaimer">
+            <div class="container mx-auto">
+                <div class="feature-card max-w-4xl mx-auto">
+                    <div class="text-center mb-8">
+                        <div class="feature-icon mx-auto mb-4" style="width: 80px; height: 80px; font-size: 2.5rem;">⚠️</div>
+                        <h2 class="text-4xl font-bold text-white mb-4">刷机免责声明</h2>
+                    </div>
+                    <div class="text-left space-y-4">
+                        <p class="text-lg text-white text-opacity-90 leading-relaxed">
+                            本工具仅提供<span class="font-semibold text-white">技术交流与学习用途</span>，所有操作均由用户自主完成。刷机、解锁BL锁、Root等操作可能导致设备失去官方保修、数据丢失或系统损坏，您需自行承担所有风险。
+                        </p>
+                        <p class="text-lg text-white text-opacity-90 leading-relaxed">
+                            在使用本工具前，请务必<span class="font-semibold text-white">备份重要数据</span>，并确认您已充分了解操作步骤与潜在风险。
+                        </p>
+                        <p class="text-lg text-white text-opacity-90 leading-relaxed">
+                            本项目开发者及维护团队<span class="font-semibold text-white">不对任何因使用本工具造成的设备损坏、数据损失或其他后果承担责任</span>。
+                        </p>
+                        <div class="mt-8 pt-6 border-t border-white border-opacity-20 text-center">
+                            <p class="text-base text-white text-opacity-70">
+                                使用本工具即表示您已阅读、理解并同意以上声明
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 底部版权区 -->
+        <footer class="footer" id="about">
+            <div class="container mx-auto px-6">
+                <p class="mb-2">© 2026 联想菜鸟工具箱 v3.0</p>
+                <p class="text-sm">基于开源项目开发 | 专为安卓设备爱好者和开发者设计</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // 页面加载完成后隐藏加载动画
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.getElementById('pageLoader').classList.add('hidden');
+            }, 500);
+        });
+
+        // 生成粒子背景
+        function createParticles() {
+            const particlesBg = document.getElementById('particlesBg');
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // 随机大小
+                const size = Math.random() * 4 + 2;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                
+                // 随机位置
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                
+                // 随机动画延迟
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                
+                particlesBg.appendChild(particle);
+            }
+        }
+
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // 功能卡片滚动显示动画
+        function animateCards() {
+            const cards = document.querySelectorAll('.feature-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const delay = entry.target.getAttribute('data-delay') || 0;
+                        setTimeout(() => {
+                            entry.target.classList.add('visible');
+                        }, delay);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+
+            cards.forEach(card => {
+                observer.observe(card);
+            });
+        }
+
+        // 视差滚动效果
+        function parallaxScroll() {
+            const parallaxElements = document.querySelectorAll('.parallax');
+            
+            window.addEventListener('scroll', function() {
+                const scrolled = window.pageYOffset;
+                
+                parallaxElements.forEach(element => {
+                    const speed = element.getAttribute('data-speed') || 0.5;
+                    const yPos = -(scrolled * speed);
+                    element.style.transform = `translateY(${yPos}px)`;
+                });
+            });
+        }
+
+        // 移动端菜单切换
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            // 这里可以添加移动端菜单展开逻辑
+            alert('移动端菜单功能待实现');
+        });
+
+        // 平滑滚动到锚点
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            animateCards();
+            parallaxScroll();
+        });
+
+        // 下载按钮点击事件 - 兼容所有主流浏览器
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            // 添加点击波纹效果
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 100);
+
+            // 触发下载 - 使用 GitHub Release 链接
+            // 注意：部署后需要替换为实际的 GitHub Release 下载链接
+            const fileName = '联想菜鸟工具箱.exe';
+            
+            // 方法1: 使用 GitHub Release 链接（推荐）
+            // 格式: https://github.com/用户名/仓库名/releases/download/版本号/文件名
+            // 示例: const filePath = 'https://github.com/zhangsan/uotan-toolbox-website/releases/download/v3.0/联想菜鸟工具箱.exe';
+            
+            // 方法2: 如果文件在仓库中（小于100MB）
+            const filePath = '联想菜鸟工具箱.exe'; // 相对路径
+            
+            // 创建隐藏的 <a> 标签触发下载
+            const link = document.createElement('a');
+            link.href = filePath;
+            link.download = fileName;
+            link.style.display = 'none';
+            
+            // 添加到 DOM
+            document.body.appendChild(link);
+            
+            // 触发点击
+            link.click();
+            
+            // 清理
+            setTimeout(() => {
+                document.body.removeChild(link);
+            }, 100);
+            
+            // 备用方案 - 使用 window.location
+            setTimeout(() => {
+                try {
+                    // 检测是否是 IE 浏览器
+                    if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                        // IE 浏览器特殊处理
+                        fetch(filePath)
+                            .then(response => response.blob())
+                            .then(blob => {
+                                window.navigator.msSaveOrOpenBlob(blob, fileName);
+                            })
+                            .catch(err => {
+                                console.error('下载失败:', err);
+                                // 最后的备用方案
+                                window.location.href = filePath;
+                            });
+                    }
+                } catch (e) {
+                    console.log('使用标准下载方法');
+                }
+            }, 50);
+        });
+
+        // 查看文档按钮悬停效果（链接形式，不需要点击事件）
+        document.querySelectorAll('.btn-secondary').forEach(button => {
+            button.addEventListener('mousedown', function() {
+                this.style.transform = 'scale(0.95)';
+            });
+            button.addEventListener('mouseup', function() {
+                this.style.transform = '';
+            });
+            button.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+            });
+        });
+    </script>
+</body>
+</html>

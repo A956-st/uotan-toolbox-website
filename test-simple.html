@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单测试</title>
+    <style>
+        body {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .test-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 1200px;
+        }
+        .step-container {
+            display: flex;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        .step-image {
+            flex: 1;
+            max-width: 500px;
+        }
+        .step-image img {
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        .step-text {
+            flex: 1;
+            color: white;
+        }
+        h1, h2 {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>图片路径测试</h1>
+        
+        <h2>测试1: 直接路径</h2>
+        <div class="step-container">
+            <div class="step-image">
+                <img src="images/screenshot-24.png" alt="启动界面" loading="lazy">
+            </div>
+            <div class="step-text">
+                <p>这是启动界面截图</p>
+                <p>路径: images/screenshot-24.png</p>
+            </div>
+        </div>
+
+        <h2>测试2: 第二张图片</h2>
+        <div class="step-container">
+            <div class="step-image">
+                <img src="images/screenshot-1.png" alt="主界面" loading="lazy">
+            </div>
+            <div class="step-text">
+                <p>这是主界面截图</p>
+                <p>路径: images/screenshot-1.png</p>
+            </div>
+        </div>
+
+        <h2>测试3: 检查浏览器控制台</h2>
+        <p style="color: white;">
+            如果图片不显示，请按F12打开开发者工具，查看Console和Network标签页的错误信息。
+        </p>
+    </div>
+
+    <script>
+        // 检测图片加载状态
+        document.querySelectorAll('img').forEach((img, index) => {
+            img.addEventListener('load', function() {
+                console.log(`✓ 图片 ${index + 1} 加载成功:`, this.src);
+            });
+            img.addEventListener('error', function() {
+                console.error(`✗ 图片 ${index + 1} 加载失败:`, this.src);
+            });
+        });
+    </script>
+</body>
+</html>
